@@ -9,12 +9,10 @@ const productSchema = new mongoose.Schema({
   discount: { type: Number, default: 0 }, // Discount %
   stockQuantity: { type: Number, required: true },
   images: [{ type: String }], //  image URLs
-  ratings: [{
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    rating: { type: Number, min: 1, max: 5 },
-    review: String,
-    createdAt: { type: Date, default: Date.now },
-  }],
+  vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },//added new line
+  reviews: [
+     { type: mongoose.Schema.Types.ObjectId, ref: 'Review' }
+  ],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

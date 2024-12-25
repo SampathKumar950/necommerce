@@ -5,14 +5,20 @@ import User from "../models/users.js";
 import { validateEmail,validatePhone,validatePassword } from "../validations/userValidations.js";
 import { verifyToken } from "../middlewares/authMiddleware.js"; // JWT Authentication Middleware
 import Product from "../models/products.js";
+import Vendor from "../models/vendors.js";
+import Review from "../models/reviews.js";
 
 
 const router = express.Router();
 
 // USER ROUTES CREATED TILL ARE :- REGISTER,LOGIN,GET USER PROFILE,UPDATE USER PROFILE,ADD TO WISHLIST,GET WISHLIST
-// ,REMOVE PRODUCTS FROM WISHLIST,ADD TO CART ,REMOVE PRODUCT FROM CART(SIMILAR TO WISHLIST)
+// ,REMOVE PRODUCTS FROM WISHLIST,ADD TO CART ,REMOVE PRODUCT FROM CART(SIMILAR TO WISHLIST),
+//REQUESTING TO BECOME VENDOR,CREATE REVIEWS BY USER
 
-//NEED TO BE CREATED :- REQUESTING TO BECOME VENDOR,DROP FROM BEING VENDOR(request's need to redirect to admin)
+//NEED TO BE TESTED :- DELETE REVIEW BY USER
+
+//NEED TO BE CREATED :- DROP FROM BEING VENDOR(request's need to redirect to admin),...
+
 //-----------------------------------------------------------------------------------------------------------------
 
 
@@ -130,7 +136,7 @@ router.put("/profile", verifyToken , async (req, res) => {
     if (!validatePhone(phone)) {
       errors.phone = "Invalid phone number" ;
     }
-    if(Objects.keys(errors).length>0){
+    if(Object.keys(errors).length>0){
         return res.status(400).json({errors});
     }
 
@@ -284,6 +290,57 @@ router.get("/cart",verifyToken,async(req,res)=> {
     }
 });
 
+//Request to Become Vendor
+router.post("/vendor",verifyToken,async(req,res)=>{
+  const {businessName} = req.body;
+  const user = req.userId;
+  try{
+    const vendor = new Vendor({
+      user,
+      businessName
+    });
+    await vendor.save();
+    res.status(200).json({message: "request sent to become vendor",vendor});
+  }catch(error){
+    res.status(500).json({message: "error at user requesting to become vender", error});
+  }
+});
+//Create Review By User
+router.post("/review",verifyToken,async(req,res)=>{
+  const {product,rating,comment} = req.body; // apply validations in react for comment len & rating range
+  const user = req.userId;
+  try{
+    const review = new Review({
+      user,product,rating,comment
+    });
+    await review.save();
+    const userObj = await User.findById(user);
+    userObj.reviews.push(review._id);
+    await userObj.save();
+    const productObj = await Product.findById(product);
+    productObj.reviews.push(review._id);
+    await productObj.save();
+    res.status(200).json({message: "review Created",review,productObj,userObj});
+  }catch(error){
+    res.status(500).json({message: "error at creating user review", error});
+  }
+});
+//Delete Review By User -----Need To be Checked-----
+router.delete("/review",verifyToken,async(req,res)=>{
+  const {reviewId} = req.body;
+  try{
+      const review = await Review.findByIdAndDelete(reviewId);
+      const user = await User.findById(review.user);
+      await user.reviews.pull(reviewId);
+      await user.save();
+      const product = await Product.findById(review.product);
+      await product.reviews.pull(reviewId);
+      await product.save();
+      res.status(200).json({message:"review deleted successfully by user",review});
+  }catch(error){
+      res.status(500).json({message:"error at deleting review by user", error})
+  }
+});
 //-----------------------------------------------------------------------------------------------------------------
 // Sample for testing - Add Product to product schema;
 
