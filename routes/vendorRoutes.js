@@ -7,6 +7,7 @@ import User from "../models/users.js"
 
 const router = express.Router();
 
+//CREATED :- CREATE PRODUCT BY VENDOR, DELETE PRODUCT BY VENDOR , UPDATE PRODUCT BY VENDOR
 
 //NEED TO CREATE ORDER STATUS UPDATE
 //-------------------------------------------------------------------------------------------------

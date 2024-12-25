@@ -9,6 +9,10 @@ import Product from "../models/products.js";
 
 const router = express.Router();
 
+//CREATED :- GET ALL VENDOR REQUESTS, ACCEPT VENDOR REQUEST, DELETE USER REVIEW
+
+//--------------------------------------------------------------------------------------------------
+
 //Get all  vendor requests
 router.get("/getRequest",verifyToken,isAdmin,async(req,res)=>{
     try{
