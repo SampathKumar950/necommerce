@@ -9,9 +9,11 @@ import Product from "../models/products.js";
 
 const router = express.Router();
 
-//-----------------------------------------------------------------------------------------------------------------
 // USER ROUTES CREATED TILL ARE :- REGISTER,LOGIN,GET USER PROFILE,UPDATE USER PROFILE,ADD TO WISHLIST,GET WISHLIST
-// NEED TO BE CREATED:- REMOVE PRODUCTS FROM WISHLIST,ADD TO CART ,REMOVE PRODUCT FROM CART(SIMILAR TO WISHLIST)
+// ,REMOVE PRODUCTS FROM WISHLIST,ADD TO CART ,REMOVE PRODUCT FROM CART(SIMILAR TO WISHLIST)
+
+//NEED TO BE CREATED :- REQUESTING TO BECOME VENDOR,DROP FROM BEING VENDOR(request's need to redirect to admin)
+//-----------------------------------------------------------------------------------------------------------------
 
 
 // User Registration
@@ -93,7 +95,7 @@ router.post("/login", async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "error at login" , error });
     }
-  });
+});
 
 
 // Get User Profile
@@ -117,7 +119,21 @@ router.get("/profile", verifyToken , async (req, res) => {
 // Update User Profile
 router.put("/profile", verifyToken , async (req, res) => {
     const { username, email, phone, address } = req.body;
+    const errors = {};
+
+    // Validate email format
+    if (!validateEmail(email)) {
+     errors.email = "Invalid email format";
+    }
   
+    // Validate phone number format
+    if (!validatePhone(phone)) {
+      errors.phone = "Invalid phone number" ;
+    }
+    if(Objects.keys(errors).length>0){
+        return res.status(400).json({errors});
+    }
+
     try {
       const user = await User.findById(req.userId);
       if (!user) {
@@ -136,7 +152,7 @@ router.put("/profile", verifyToken , async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "error at update profile" , error});
     }
-  });
+});
 
   // Add to Wishlist
 router.post("/wishlist", verifyToken , async (req, res) => {
@@ -162,10 +178,10 @@ router.post("/wishlist", verifyToken , async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "error at add to wishlist" });
     }
-  });
+});
   
-  // Get Wishlist
-  router.get("/wishlist", verifyToken , async (req, res) => {
+// Get Wishlist
+router.get("/wishlist", verifyToken , async (req, res) => {
     try {
 
     // The populate("wishlist") tells Mongoose to populate the wishlist field with the actual
@@ -179,10 +195,10 @@ router.post("/wishlist", verifyToken , async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "error at get wishlist" });
     }
-  });
+});
 
-  // Delete Product from wishList
-  router.delete("/wishlist",verifyToken, async(req, res) => {
+// Delete Product from wishList
+router.delete("/wishlist",verifyToken, async(req, res) => {
     const {productId} = req.body;
     try{
         const user = await User.findById(req.userId);
@@ -203,10 +219,10 @@ router.post("/wishlist", verifyToken , async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "error at delete product from wishlist" + error});
       }
-  })
+})
 
-  // Add Product to Cart
-  router.post("/cart",verifyToken,async(req,res)=> {
+// Add Product to Cart
+router.post("/cart",verifyToken,async(req,res)=> {
     const {productId} = req.body;
     try{
         const user = await User.findById(req.userId);
@@ -228,10 +244,10 @@ router.post("/wishlist", verifyToken , async (req, res) => {
     }catch(error){
         res.status(500).json({message:"error at add product to cart" + error});
     }
-  })
+});
 
-  // Remove Product from Cart
-  router.delete("/cart",verifyToken,async(req,res)=> {
+// Remove Product from Cart
+router.delete("/cart",verifyToken,async(req,res)=> {
     const {productId} = req.body;
     try{
         const user = await User.findById(req.userId);
@@ -253,28 +269,28 @@ router.post("/wishlist", verifyToken , async (req, res) => {
     }catch(error){
         res.status(500).json({message:"error at delete product from cart" + error});
     }
+});
 
-    //Get Cart
-    router.get("/cart",verifyToken,async(req,res)=> {
-        try{
-            const user = await User.findById(req.userId).populate("cart");
-            if(!user){
-                return res.status(404).json({message: "User not Found"});
-            }
-            res.status(200).json({cart: user.cart});
-        }catch(error){
-            res.status(500).json({message: "error at get cart", error});
+//Get Cart
+router.get("/cart",verifyToken,async(req,res)=> {
+    try{
+        const user = await User.findById(req.userId).populate("cart");
+        if(!user){
+            return res.status(404).json({message: "User not Found"});
         }
-    })
-  })
+        res.status(200).json({cart: user.cart});
+    }catch(error){
+        res.status(500).json({message: "error at get cart", error});
+    }
+});
 
-  //-----------------------------------------------------------------------------------------------------------------
- // Sample for testing - Add Product to product schema;
+//-----------------------------------------------------------------------------------------------------------------
+// Sample for testing - Add Product to product schema;
 
- router.post("/product", async(req,res)=>{
+router.post("/product", async(req,res)=>{
     const {name, category, price, stockQuantity} = req.body;
     const product = new Product({ name,category,price,stockQuantity});
     await product.save();
     res.status(200).json({message: "product added", product});
- })
+})
 export default router;
