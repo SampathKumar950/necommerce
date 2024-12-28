@@ -1,23 +1,28 @@
 {
-  "name": "server",
+  "name": "necommerce",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm start",
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SampathKumar950/necommerce.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.12.0",
-    "mongoose": "^8.9.2",
-    "nodemon": "^3.1.9"
-  }
+  "bugs": {
+    "url": "https://github.com/SampathKumar950/necommerce/issues"
+  },
+  "homepage": "https://github.com/SampathKumar950/necommerce#readme",
+  "description": ""
 }
