@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const vendorSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
-  role: { type: String, enum: ['user','vendor'], default: 'user' },
+  role: { type: String, enum: ['user','vendor','withdraw','inactive'], default: 'user' },
   businessName: { type: String, required: true },
   products: [{
     type: mongoose.Schema.Types.ObjectId,

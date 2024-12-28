@@ -7,17 +7,19 @@ import { verifyToken } from "../middlewares/authMiddleware.js"; // JWT Authentic
 import Product from "../models/products.js";
 import Vendor from "../models/vendors.js";
 import Review from "../models/reviews.js";
+import Order from "../models/orders.js";
+import { sendVerificationCode,welcomeEmailCode} from "../middlewares/emailConfig.js";
 
 
 const router = express.Router();
 
 // USER ROUTES CREATED TILL ARE :- REGISTER,LOGIN,GET USER PROFILE,UPDATE USER PROFILE,ADD TO WISHLIST,GET WISHLIST
 // ,REMOVE PRODUCTS FROM WISHLIST,ADD TO CART ,REMOVE PRODUCT FROM CART(SIMILAR TO WISHLIST),
-//REQUESTING TO BECOME VENDOR,CREATE REVIEWS BY USER
+//REQUESTING TO BECOME VENDOR,CREATE REVIEWS BY USER,DELETE REVIEW BY USER
 
-//NEED TO BE TESTED :- DELETE REVIEW BY USER
+//NEED TO BE TESTED :-
 
-//NEED TO BE CREATED :- DROP FROM BEING VENDOR(request's need to redirect to admin),...
+//NEED TO BE CREATED :- 
 
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -27,7 +29,10 @@ router.post("/register", async (req, res) => {
   const { username, email, password, phone, address } = req.body;
 
   const errors = {};
-
+  if(!username||!email||!password||!phone){
+    errors.existed = "required all fields";
+    return res.json({message:"requires all fields"});
+  }
   // Validate email format
   if (!validateEmail(email)) {
    errors.email = "Invalid email format";
@@ -58,20 +63,41 @@ router.post("/register", async (req, res) => {
     // Encrypt password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
+    const verificationCode = Math.floor(100000+Math.random()*900000).toString();
     // Create new user
-    const user = new User({ username, email, password: hashedPassword, phone, address });
+    const user = new User({ username, email, password: hashedPassword, phone, address ,verificationCode});
     await user.save();
-
+    await sendVerificationCode(email,verificationCode);
     // Generate JWT token - this code is required only if , no login required upon registration
     const token = jwt.sign({ userId: user._id }, "jwt-secret-key", { expiresIn: "1d" });
     console.log("success");
+    
     res.status(201).json({ token, userId: user._id, message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "error at register" , err});
+    res.status(500).json({ message: "error at register" , error});
   }
 });
 
+
+//verify User
+router.post("/verify",async(req,res)=>{ // ,verifyToken(Required for token based registration)
+const{verificationCode,userId} = req.body;
+  try{
+    const user = await User.findById(userId);
+    console.log(user.verificationCode,verificationCode);
+    if(verificationCode!==user.verificationCode){
+      return res.json({message:"You have Entered inValid OTP"});
+    }
+    const name = user.username;
+    user.verified = true;
+    user.verificationCode = undefined;
+    await user.save();
+    await welcomeEmailCode(user.email,user.name);
+    res.status(200).json({message:"email verified",user});
+  }catch(error){
+    res.status(500).json({message:"error at verifying register",error});
+  }
+});
 
 // User Login
 router.post("/login", async (req, res) => {
@@ -236,7 +262,7 @@ router.post("/cart",verifyToken,async(req,res)=> {
             return res.status(404).json({message: "User not Found"});
         }
          // Check if product exists in the cart
-         const productIndex = user.cart.indexOf(productId);
+         const productIndex =  user.cart.indexOf(productId);
          console.log(productIndex);
          if (productIndex !== -1) {
            return res.status(400).json({ message: "Product Already in cart" });
@@ -290,11 +316,18 @@ router.get("/cart",verifyToken,async(req,res)=> {
     }
 });
 
-//Request to Become Vendor
+//Request to Become Vendor ----> vendor profile creation update (Need to be tested this one)
 router.post("/vendor",verifyToken,async(req,res)=>{
   const {businessName} = req.body;
   const user = req.userId;
   try{
+    const checkVendor = await Vendor.findOne({user});
+    if(checkVendor){
+      checkVendor.businessName = businessName;
+      checkVendor.role = 'user';
+      await checkVendor.save();
+      return res.status(200).json({message:"request sent to make vendor account Active",checkVendor});
+    }
     const vendor = new Vendor({
       user,
       businessName
@@ -325,7 +358,7 @@ router.post("/review",verifyToken,async(req,res)=>{
     res.status(500).json({message: "error at creating user review", error});
   }
 });
-//Delete Review By User -----Need To be Checked-----
+//Delete Review By User
 router.delete("/review",verifyToken,async(req,res)=>{
   const {reviewId} = req.body;
   try{
@@ -336,11 +369,12 @@ router.delete("/review",verifyToken,async(req,res)=>{
       const product = await Product.findById(review.product);
       await product.reviews.pull(reviewId);
       await product.save();
-      res.status(200).json({message:"review deleted successfully by user",review});
+      res.status(200).json({message:"review deleted successfully by user",review,user,product});
   }catch(error){
       res.status(500).json({message:"error at deleting review by user", error})
   }
 });
+
 //-----------------------------------------------------------------------------------------------------------------
 // Sample for testing - Add Product to product schema;
 

@@ -19,7 +19,7 @@ export const verifyToken = (req, res, next) => {
     const decoded = jwt.verify(token, "jwt-secret-key");
 
     req.userId = decoded.userId;
-    res.test = "hi";
+    // res.test = "hi";
     next();
   } catch (error) {
     return res.status(401).json({ message: "Token is not valid" });

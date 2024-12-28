@@ -13,7 +13,7 @@ export const validatePassword = (password) => {
       return "Password must contain at least one special character (e.g., !@#$%^&*).";
     }
      return "Success";
-  };
+};
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$/;
