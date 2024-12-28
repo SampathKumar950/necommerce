@@ -1,0 +1,19 @@
+GET http://localhost:3000/reviews HTTP/1.1
+
+###
+
+POST http://localhost:3000/api/users/register HTTP/1.1
+
+Content-Type: application/json
+{
+  "username": "surya",
+  "email":"test2@gmail.com",
+  "password":"Test@1816161",
+  "phone":9493800639,
+  "address":"test"
+}
+
+
+###
+
+GET http://localhost:3000/api/users/profile HTTP/1.1
