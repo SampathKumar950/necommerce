@@ -1,8 +1,11 @@
 import { useRoomContext } from '../context/RoomContext';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LogoWhite } from '../assets'; // SVG Logo
-import { LogoDark } from '../assets'; // SVG Logo
+// import { LogoWhite } from '../assets'; // SVG Logo
+// import { LogoDark } from '../assets'; // SVG Logo
+import { FaShoppingCart } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
+
 
 
 const Header = () => {
@@ -19,7 +22,7 @@ const Header = () => {
     );
   });
 
-  const navLinks = ['Home', 'Become a seller', 'car', 'orders', 'profile'];
+  const navLinks = ['Home', 'Become a seller', 'cart', 'orders', 'profile'];
 
   return (
     <header
@@ -35,8 +38,8 @@ const Header = () => {
         </Link>
 
         {/* Nav */}
-        <nav className={`${header ? 'text-primary' : 'text-white'}
-        flex gap-x-4 lg:gap-x-8 font-tertiary tracking-[3px] text-[15px] items-center uppercase`}>
+        {/* {`${header ? 'text-primary' : 'text-white'} */}
+        <nav className=' text-gray flex gap-x-4 lg:gap-x-8 font-tertiary tracking-[3px] text-[15px] items-center uppercase'>
           {
             navLinks.map(link =>
               <Link to="/" className='transition hover:text-accent' key={link}>

@@ -25,6 +25,30 @@ export const sliderData = [
         bg: images.Slider3,
         btnNext: 'Lightning Sale',
     },
+    {
+        id: 4,
+        title: 'UPTO 90% OFF on Electronics',
+        bg: images.Slider4,
+        btnNext: 'Elextronics',
+    },
+    {
+        id: 5,
+        title: 'NEVER BEFORE EVER AFTER OFFERS',
+        bg: images.Slider5,
+        btnNext: 'Lightning Sale',
+    },
+    {
+        id: 6,
+        title: 'UPTO 90% OFF on Electronics',
+        bg: images.Slider6,
+        btnNext: 'Elextronics',
+    },
+    {
+        id: 7,
+        title: 'GO FLASH WITH LIGHTNING SALE!',
+        bg: images.Slider7,
+        btnNext: 'Lightning Sale',
+    },
 ]
 
 

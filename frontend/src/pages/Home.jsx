@@ -1,6 +1,6 @@
 // import { BookForm, HeroSlider, Rooms, ScrollToTop } from '../components';
 import { HeroSlider, Rooms, ScrollToTop } from '../components';
-
+import ProductList from '../components/productlist';
 
 const Home = () => {
 
@@ -18,7 +18,9 @@ const Home = () => {
 
       </div> */}
 
-      <Rooms />
+      <ProductList />
+      <ProductList />
+      <ProductList />
     </div>
   );
 };

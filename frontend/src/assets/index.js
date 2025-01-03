@@ -18,6 +18,10 @@ import Room8ImgLg from './img/rooms/8-lg.png';
 import Slider1 from './img/heroSlider/1.jpg';
 import Slider2 from './img/heroSlider/2.jpg';
 import Slider3 from './img/heroSlider/3.jpg';
+import Slider4 from './img/heroSlider/4.jpg';
+import Slider5 from './img/heroSlider/5.jpg';
+import Slider6 from './img/heroSlider/6.jpg';
+import Slider7 from './img/heroSlider/7.jpg';
 
 export { ReactComponent as LogoDark } from './img/logo-dark.svg';
 export { ReactComponent as LogoWhite } from './img/logo-white.svg';
@@ -26,6 +30,10 @@ const images = {
     Slider1,
     Slider2,
     Slider3,
+    Slider4,
+    Slider5,
+    Slider6,
+    Slider7,
     Room1Img,
     Room2Img,
     Room3Img,
