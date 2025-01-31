@@ -104,7 +104,22 @@ router.put("/updateProduct", verifyToken, isVendor, async(req,res) => {
       res.status(500).json({ message: 'error at updation of product by vendor', error });
     }
   
-})
+});
+
+//WithDraw from Being Vendor -----------Need To be Tested
+router.put('/withdraw',verifyToken,isVendor, async(req,res)=> {
+    try{
+      const vendor = await Vendor.findById(req.vendorId);
+      if(vendor.role==='withdraw'){
+        res.status(200).json({message: "your request already in process..."});
+      }
+      vendor.role = 'withdraw';
+      await vendor.save();
+      res.status(200).json({message: "your request to withdraw as vendor is Sent"});
+    }catch(error){
+      res.status(500).json({message:"error while requesting to withdraw as Vendor...",error});
+    }
+});
 
 
 
